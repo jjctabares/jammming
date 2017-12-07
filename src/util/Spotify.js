@@ -1,26 +1,29 @@
 const clientId = 'f3cddfd9a94743f49d42d669d2856fef';
-const secret = 'fa50d0b20efc4fbab085b4ce3ace2971';
-const uri = "http://localhost:3000"
-let accessToken ='';
+const redirectUri = 'http://localhost:3000/';
+const spotifyUrl = `https://accounts.spotify.com/authorize?response_type=token&scope=playlist-modify-public&client_id=${clientId}&redirect_uri=${redirectUri}`;
+let accessToken;
+let expiresIn;
 
 const Spotify = {
-  getAccessToken(){
+  getAccessToken() {
     if (accessToken) {
-      return new Promise(resolve => resolve(accessToken));
+      return accessToken;
     }
-    return(
-      fetch(`https://cors-anywhere.herokuapp.com/https://accounts.spotify.com/authorize/?client_id=${clientId}&response_type=code&redirect_uri=${uri}%2Fcallback&scope=user-read-private%20user-read-email&state=34fFs29kd09`).then(
-        response => {
-	        if (response.ok) {
-            return response.json();
-          }
-          throw new Error('Request failed!');
-        }, networkError => {
-          console.log(networkError.message);
-          }).then(jsonResponse => jsonResponse)
-        )
-        console.log('here');
-      }
+    const urlAccessToken = window.location.href.match(/access_token=([^&]*)/);
+    const urlExpiresIn = window.location.href.match(/expires_in=([^&]*)/);
+    if (urlAccessToken && urlExpiresIn) {
+      accessToken = urlAccessToken[1];
+      expiresIn = urlExpiresIn[1];
+      window.setTimeout(() => accessToken = '', expiresIn * 1000);
+      window.history.pushState('Access Token', null, '/');
+    } else {
+      window.location = spotifyUrl;
+    }
+  },
+
+  search() {
+    
+  }
 
 /*
   return (
@@ -36,6 +39,6 @@ const Spotify = {
   );
 */
 }
-console.log(Spotify.getAccessToken());
 
-//export default Spotify;
+
+export default Spotify;
