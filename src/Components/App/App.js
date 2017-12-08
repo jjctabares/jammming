@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
+import Spotify from '../../util/Spotify';
 import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
+
 
 
 
@@ -58,10 +60,16 @@ class App extends Component {
 
     }
 
-    search(term) {
+    /*search(term) {
       console.log(term);
+    }*/
+    search(term) {
+      Spotify.search(term).then(track =>{
+        this.setState({
+          searchResults: track
+        });
+      });
     }
-
 
   render() {
     return (
